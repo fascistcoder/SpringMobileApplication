@@ -4,6 +4,8 @@ import com.appsdeveloperblog.app.exception.UserServiceException;
 import com.appsdeveloperblog.app.rest.dto.UpdateUserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserResponse;
+import com.appsdeveloperblog.app.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,9 +28,12 @@ import java.util.UUID;
  * @version 1.0
  * @since 08/06/22
  */
+
+@AllArgsConstructor
 @RestController @RequestMapping("/users") // http://localhost:2001/users
 public class UserController {
 
+	private final UserService userService;
 	Map<String, UserResponse> users;
 
 	@GetMapping public String getUsers(@RequestParam(value = "page", defaultValue = "1") int page,
@@ -42,8 +47,10 @@ public class UserController {
 			throw new UserServiceException("A user service exception is thrown");
 		}
 
-		if (users.containsKey(userId)) {
-			return ResponseEntity.status(HttpStatus.OK).body(users.get(userId));
+		UserResponse userResponse = userService.getUser(userId);
+
+		if (userResponse != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(userResponse);
 
 		} else {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
@@ -53,20 +60,7 @@ public class UserController {
 
 	@PostMapping public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
 
-		String userId = UUID.randomUUID().toString();
-
-		UserResponse userResponse = UserResponse.builder()
-				.firstName(userRequest.getFirstName())
-				.lastName(userRequest.getLastName())
-				.email(userRequest.getEmail())
-				.userId(userId)
-				.build();
-
-		if (users == null) {
-			users = new HashMap<>();
-		}
-
-		users.put(userId, userResponse);
+		UserResponse userResponse = userService.createUser(userRequest);
 
 		return ResponseEntity.status(HttpStatus.OK).body(userResponse);
 	}
@@ -83,7 +77,7 @@ public class UserController {
 	}
 
 	@DeleteMapping(path = "/{id}") public ResponseEntity deleteUser(@PathVariable String id) {
-		users.remove(id);
+		userService.deleteUser(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
