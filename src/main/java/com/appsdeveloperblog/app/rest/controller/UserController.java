@@ -5,7 +5,6 @@ import com.appsdeveloperblog.app.rest.dto.UserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -78,7 +77,8 @@ public class UserController {
 		return userResponse;
 	}
 
-	@DeleteMapping public String deleteUser() {
-		return "delete user was called";
+	@DeleteMapping(path="/{id}") public ResponseEntity deleteUser(@PathVariable String id) {
+		users.remove(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
