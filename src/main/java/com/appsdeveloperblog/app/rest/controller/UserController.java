@@ -1,5 +1,6 @@
 package com.appsdeveloperblog.app.rest.controller;
 
+import com.appsdeveloperblog.app.exception.UserServiceException;
 import com.appsdeveloperblog.app.rest.dto.UpdateUserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserResponse;
@@ -37,10 +38,14 @@ public class UserController {
 
 	@GetMapping(path = "/{userId}") public ResponseEntity<UserResponse> getUser(@PathVariable String userId) {
 
-		if(users.containsKey(userId)){
+		if (true) {
+			throw new UserServiceException("A user service exception is thrown");
+		}
+
+		if (users.containsKey(userId)) {
 			return ResponseEntity.status(HttpStatus.OK).body(users.get(userId));
 
-		}else{
+		} else {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 
@@ -57,7 +62,7 @@ public class UserController {
 				.userId(userId)
 				.build();
 
-		if(users==null) {
+		if (users == null) {
 			users = new HashMap<>();
 		}
 
@@ -77,7 +82,7 @@ public class UserController {
 		return userResponse;
 	}
 
-	@DeleteMapping(path="/{id}") public ResponseEntity deleteUser(@PathVariable String id) {
+	@DeleteMapping(path = "/{id}") public ResponseEntity deleteUser(@PathVariable String id) {
 		users.remove(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
