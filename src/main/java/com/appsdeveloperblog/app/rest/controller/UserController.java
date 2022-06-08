@@ -1,5 +1,6 @@
 package com.appsdeveloperblog.app.rest.controller;
 
+import com.appsdeveloperblog.app.rest.dto.UpdateUserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserResponse;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -45,7 +47,7 @@ public class UserController {
 
 	}
 
-	@PostMapping public ResponseEntity<UserResponse> createUser(@Validated  @RequestBody UserRequest userRequest) {
+	@PostMapping public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
 
 		String userId = UUID.randomUUID().toString();
 
@@ -60,11 +62,20 @@ public class UserController {
 			users = new HashMap<>();
 		}
 
+		users.put(userId, userResponse);
+
 		return ResponseEntity.status(HttpStatus.OK).body(userResponse);
 	}
 
-	@PutMapping public String updateUser() {
-		return "update user was called";
+	@PutMapping(path = "/{userId}") public UserResponse updateUser(@PathVariable String userId, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+
+		UserResponse userResponse = users.get(userId);
+		userResponse.setFirstName(updateUserRequest.getFirstName());
+		userResponse.setLastName(updateUserRequest.getLastName());
+
+		users.put(userId, userResponse);
+
+		return userResponse;
 	}
 
 	@DeleteMapping public String deleteUser() {
