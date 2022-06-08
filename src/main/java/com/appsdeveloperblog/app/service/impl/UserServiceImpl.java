@@ -1,5 +1,6 @@
 package com.appsdeveloperblog.app.service.impl;
 
+import com.appsdeveloperblog.app.rest.dto.UpdateUserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserRequest;
 import com.appsdeveloperblog.app.rest.dto.UserResponse;
 import com.appsdeveloperblog.app.service.UserService;
@@ -44,6 +45,17 @@ public class UserServiceImpl implements UserService {
 	@Override public UserResponse getUser(String userId) {
 
 		return users.getOrDefault(userId, null);
+	}
+
+	@Override public UserResponse updateUser(String userId, UpdateUserRequest updateUserRequest) {
+
+		UserResponse userResponse = users.get(userId);
+		userResponse.setFirstName(updateUserRequest.getFirstName());
+		userResponse.setLastName(updateUserRequest.getLastName());
+
+		users.put(userId, userResponse);
+
+		return userResponse;
 	}
 
 	@Override public void deleteUser(String id) {

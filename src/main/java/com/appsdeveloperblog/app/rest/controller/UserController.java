@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.Objects;
 
 /**
  * @author <a>Pulkit Aggarwal</a>
@@ -34,7 +32,6 @@ import java.util.UUID;
 public class UserController {
 
 	private final UserService userService;
-	Map<String, UserResponse> users;
 
 	@GetMapping public String getUsers(@RequestParam(value = "page", defaultValue = "1") int page,
 			@RequestParam(value = "limit", defaultValue = "50") int limit, @RequestParam(value = "sort", defaultValue = "desc", required = false) String sort) {
@@ -43,7 +40,7 @@ public class UserController {
 
 	@GetMapping(path = "/{userId}") public ResponseEntity<UserResponse> getUser(@PathVariable String userId) {
 
-		if (true) {
+		if (Objects.equals(userId, "1622i0o")) {
 			throw new UserServiceException("A user service exception is thrown");
 		}
 
@@ -67,13 +64,7 @@ public class UserController {
 
 	@PutMapping(path = "/{userId}") public UserResponse updateUser(@PathVariable String userId, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
 
-		UserResponse userResponse = users.get(userId);
-		userResponse.setFirstName(updateUserRequest.getFirstName());
-		userResponse.setLastName(updateUserRequest.getLastName());
-
-		users.put(userId, userResponse);
-
-		return userResponse;
+		return userService.updateUser(userId, updateUserRequest);
 	}
 
 	@DeleteMapping(path = "/{id}") public ResponseEntity deleteUser(@PathVariable String id) {
